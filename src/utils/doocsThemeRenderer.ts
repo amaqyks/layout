@@ -39,7 +39,7 @@ export const DEFAULT_DOOCS_THEME_JSON: DoocsThemeJSON = {
       color: "#3f3f3f",
       lineHeight: "1.75",
       letterSpacing: "1px",
-      fontFamily: "-apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif"
+      fontFamily: "-apple-system-font, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, sans-serif"
     },
     link: { color: "#07C160" }
   },
@@ -127,7 +127,7 @@ export function styleConfigToDoocsThemeJSON(style: StyleConfig, themeName = "提
         color: style.textColor || "#1b1c1c",
         lineHeight,
         letterSpacing: "1px",
-        fontFamily: style.fontFamily || "-apple-system-font, BlinkMacSystemFont, 'Helvetica Neue', 'PingFang SC', sans-serif",
+        fontFamily: style.fontFamily || "-apple-system-font, BlinkMacSystemFont, Helvetica Neue, PingFang SC, Microsoft YaHei, sans-serif",
         paragraphSpacing,
       },
       link: { color: primaryColor }
@@ -156,7 +156,7 @@ export function renderArticleWithDoocsTheme(article: Article, themeJSON: DoocsTh
   const cardComp = themeJSON.components.find(c => c.type === 'AccentCard')?.props || {};
   const paragraphSpacing = globalBody.paragraphSpacing || '16px';
 
-  const bodyStyle = `font-size: ${globalBody.fontSize}; color: ${globalBody.color}; line-height: ${globalBody.lineHeight}; letter-spacing: ${globalBody.letterSpacing || '1px'}; font-family: ${globalBody.fontFamily || 'sans-serif'}; padding: 16px; max-width: 677px; margin: 0 auto; box-sizing: border-box; background-color: #ffffff;`;
+  const bodyStyle = `font-size: ${globalBody.fontSize}; color: ${globalBody.color}; line-height: ${globalBody.lineHeight}; letter-spacing: ${globalBody.letterSpacing || '1px'}; font-family: ${(globalBody.fontFamily || 'sans-serif').replace(/'/g, '')}; padding: 16px; max-width: 677px; margin: 0 auto; box-sizing: border-box; background-color: #ffffff;`;
 
   const blocksHtml = article.blocks.map((block) => {
     const alignStyle = block.align ? `text-align: ${block.align};` : '';
