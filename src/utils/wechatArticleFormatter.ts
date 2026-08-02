@@ -28,7 +28,7 @@ function postProcessBlocks(blocks: ContentBlock[]): ContentBlock[] {
   cleaned = cleaned.map(b => {
     if (b.type === 'bullet_list') {
       const lines = b.content.split('\n').map(line =>
-        line.replace(/^[���\-\*\d+\.]\s*/, '').trim()
+        line.replace(/^[•\-\*\d+\.]\s*/, '').trim()
       ).filter(Boolean);
       return { ...b, content: lines.join('\n') };
     }
@@ -182,7 +182,7 @@ export function parseFormattedMarkdownToBlocks(aiOutput: string): ContentBlock[]
 
   const cleanHeading = (s: string) => s.replace(/^#{1,3}\s*/, '').trim();
   const cleanQuote = (s: string) => s.replace(/^>\s*/, '').trim();
-  const cleanList = (s: string) => s.replace(/^[���\-\*]\s*/, '').trim();
+  const cleanList = (s: string) => s.replace(/^[•\-\*]\s*/, '').trim();
 
   const pushCallout = () => {
     if (calloutContent.length > 0) {
@@ -234,7 +234,7 @@ export function parseFormattedMarkdownToBlocks(aiOutput: string): ContentBlock[]
     }
 
     // Lists — merge consecutive
-    if (trimmed.match(/^[���\-\*]\s/)) {
+    if (trimmed.match(/^[•\-\*]\s/)) {
       const last = rawBlocks[rawBlocks.length - 1];
       if (last && last.type === 'bullet_list') {
         last.content += '\n' + cleanList(trimmed);

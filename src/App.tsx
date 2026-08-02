@@ -127,19 +127,19 @@ export default function App() {
       type,
       content:
         type === 'heading1'
-          ? '��һ������'
+          ? '一级标题一级标题'
           : type === 'heading2'
-          ? '�¶�������'
+          ? '二级标题¶二级标题'
           : type === 'quote'
-          ? '�ڴ˴�д�뾫ѡ����...'
+          ? '在此处写入精选引用...ڴ˴在此处写入精选引用...д在此处写入精选引用...뾫ѡ在此处写入精选引用......'
           : type === 'callout'
-          ? '�ڴ�д�����������Ҫ���ܽ�'
+          ? '在此处写入特别强调的重点或总结ڴ在此处写入特别强调的重点或总结д在此处写入特别强调的重点或总结Ҫ在此处写入特别强调的重点或总结ܽ在此处写入特别强调的重点或总结'
           : type === 'image'
           ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUhAhGK4g1LR2VqeAgo9g0EjAQ8DZxrVsP38Po1y4oAP8NbH3TDU4WMYhIJ7P4nMa4tyNfgSZH82_GMbFRePmFS6Vi4Wh2XytCAlPm6mka8hc9APMx5UT6H6D1GgwuekWVNs86BExiEu0WvI_0d67Q3vPFaK1UmoP6YS3Kf1x85t1EGzY6XrS-Xqmv0unIwpeYBSXvmjnYuwWhnIW8xHAkuIohwepbAfXh-5rC03wlMKSrYX5hOqq5'
           : type === 'divider'
           ? ''
-          : '�ڴ���������...',
-      caption: type === 'image' ? 'ͼƬ˵��' : type === 'callout' ? '?? �ص���ʾ' : undefined,
+          : '在此输入内容......',
+      caption: type === 'image' ? 'ͼƬ˵图片说明' : type === 'callout' ? '?? 📌 重点提示ص📌 重点提示ʾ' : undefined,
     };
 
     setArticles((prev) =>
@@ -156,16 +156,16 @@ export default function App() {
   const handleCreateNewArticle = () => {
     const newArticle: Article = {
       id: `proj_${Date.now()}`,
-      title: '�����±���...',
-      author: '΢���Ű�����',
+      title: '未命名文章±未命名文章...',
+      author: '΢微信排版助手Ű微信排版助手',
       date: new Date().toISOString().slice(0, 10),
-      category: '�����',
+      category: '提取 · 模板',
       coverImage: '',
       blocks: [
         {
           id: `b_${Date.now()}_1`,
           type: 'paragraph',
-          content: '�����￪ʼ׫д��������...',
+          content: '在此开始撰写您的文章￪ʼ׫д在此开始撰写您的文章...',
         },
       ],
       updatedAt: new Date().toLocaleDateString('zh-CN'),
@@ -181,7 +181,7 @@ export default function App() {
       ...currentArticle,
       id: `tpl_${Date.now()}`,
       isTemplate: true,
-      description: `���ڡ�${currentArticle.title}���������Ű�ģ��`,
+      description: `用于「ڡ用于「${currentArticle.title}」的专属排版模板」的专属排版模板`,
     };
     setTemplates((prev) => [...prev, newTemplate]);
   };
@@ -202,7 +202,7 @@ export default function App() {
     const dup: Article = {
       ...article,
       id: `proj_${Date.now()}`,
-      title: `${article.title} (����)`,
+      title: `${article.title} (模板模板)`,
       blocks: article.blocks.map((b) => ({ ...b, id: `b_${Date.now()}_${Math.random().toString(36).substring(2, 6)}` })),
       updatedAt: new Date().toLocaleDateString('zh-CN'),
     };
@@ -226,30 +226,30 @@ export default function App() {
     const newTemplate: Article = {
       id: `tpl_extracted_${Date.now()}`,
       title: theme.name,
-      author: '������ȡ',
+      author: '微信排版助手主题提取',
       date: new Date().toISOString().slice(0, 10),
-      category: '��ȡ ? ģ��',
+      category: '提取 · 模板ȡ ? ģ提取 · 模板',
       coverImage: '',
       blocks: [
         {
           id: `b_ext_${Date.now()}_1`,
           type: 'heading1',
-          content: theme.previewSample?.title || '��ȡ�ı�����ʽ',
+          content: theme.previewSample?.title || '提取的标题样式',
         },
         {
           id: `b_ext_${Date.now()}_2`,
           type: 'heading2',
-          content: theme.previewSample?.h2 || '��������Ԥ��',
+          content: theme.previewSample?.h2 || '二级标题预览',
         },
         {
           id: `b_ext_${Date.now()}_3`,
           type: 'paragraph',
-          content: theme.previewSample?.paragraph || '���Ķ�����ʽԤ��...',
+          content: theme.previewSample?.paragraph || '正文段落样式预览...',
         },
         {
           id: `b_ext_${Date.now()}_4`,
           type: 'quote',
-          content: theme.previewSample?.quote || '��ѡ����Ԥ��',
+          content: theme.previewSample?.quote || '精选引用预览',
         },
       ],
       updatedAt: new Date().toLocaleDateString('zh-CN'),
@@ -290,7 +290,7 @@ export default function App() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [currentTab, handleFormatInline, handleSaveDraft]);
 
-  // AI Polish Handler �� parses AI output into structured ContentBlock[]
+  // AI Polish Handler —— parses AI output into structured ContentBlock[]
   const handleAIPolish = async () => {
     setIsAiWorking(true);
     try {
