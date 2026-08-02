@@ -163,6 +163,13 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
                       >
                         套用模板
                       </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); onDeleteTemplate(tpl.id); }}
+                        title="删除模板"
+                        className="p-1.5 rounded-lg hover:bg-red-50 text-[#aaa] hover:text-red-500 transition-colors cursor-pointer"
+                      >
+                        <span className="material-symbols-outlined text-[18px]">delete_outline</span>
+                      </button>
                     </div>
                   </div>
                 </div>
