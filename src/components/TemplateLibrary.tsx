@@ -4,11 +4,13 @@ import { Article } from '../types';
 interface TemplateLibraryProps {
   templates: Article[];
   onUseTemplate: (template: Article) => void;
+  onDeleteTemplate: (templateId: string) => void;
 }
 
 export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
   templates,
   onUseTemplate,
+  onDeleteTemplate,
 }) => {
   const [selectedTag, setSelectedTag] = useState<string>('全部');
   const [favorites, setFavorites] = useState<Record<string, boolean>>({});

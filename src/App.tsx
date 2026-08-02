@@ -226,9 +226,9 @@ export default function App() {
     const newTemplate: Article = {
       id: `tpl_extracted_${Date.now()}`,
       title: theme.name,
-      author: '微信排版助手主题提取',
+      author: '主题提取',
       date: new Date().toISOString().slice(0, 10),
-      category: '提取 · 模板ȡ ? ģ提取 · 模板',
+      category: '提取 · 模板',
       coverImage: '',
       blocks: [
         {
@@ -258,8 +258,14 @@ export default function App() {
     };
     setTemplates((prev) => [...prev, newTemplate]);
     setStyleConfig(theme.styleConfig);
+    setCurrentTab('templates');
   };
 
+
+  // Delete a template
+  const handleDeleteTemplate = (templateId: string) => {
+    setTemplates((prev) => prev.filter((t) => t.id !== templateId));
+  };
   // Handler for inline formatting from toolbar
   const handleFormatInline = useCallback((format: 'bold' | 'italic') => {
     contentCanvasRef.current?.formatInline(format);
@@ -356,6 +362,7 @@ export default function App() {
           <TemplateLibrary
             templates={templates}
             onUseTemplate={handleUseTemplate}
+            onDeleteTemplate={handleDeleteTemplate}
           />
         )}
 
