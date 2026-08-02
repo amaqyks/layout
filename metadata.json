@@ -1,0 +1,6 @@
+{
+  "name": "公众号排版助手",
+  "description": "基于极简主义排版哲学的微信公众号排版助手，支持实时手机预览、样式编辑、项目管理与模板库。",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
