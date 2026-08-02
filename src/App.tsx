@@ -49,7 +49,6 @@ export default function App() {
   const [isStylePanelOpen, setIsStylePanelOpen] = useState<boolean>(true);
   const [isAiWorking, setIsAiWorking] = useState<boolean>(false);
   const [layoutSuggestion, setLayoutSuggestion] = useState<string>('');
-  const [layoutSuggestion, setLayoutSuggestion] = useState<string>('');
 
   // Sync to LocalStorage
   useEffect(() => {
