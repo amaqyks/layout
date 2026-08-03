@@ -8,6 +8,13 @@ export type BlockType =
   | 'bullet_list' 
   | 'divider';
 
+export interface HighlightHabit {
+  name: string;
+  style: string;
+  scene: string;
+  badgeColor?: string;
+}
+
 export interface ContentBlock {
   id: string;
   type: BlockType;
@@ -29,6 +36,8 @@ export interface Article {
   updatedAt: string;
   isTemplate?: boolean;
   description?: string;
+  styleConfig?: StyleConfig;
+  highlightHabits?: HighlightHabit[];
 }
 
 export interface StyleConfig {
@@ -42,6 +51,8 @@ export interface StyleConfig {
   paragraphSpacing: number; // e.g. 16
   headingStyle: 'left-border' | 'solid-bg' | 'badge' | 'bottom-line' | 'custom';
   quoteStyle: 'simple' | 'card' | 'speech' | 'custom';
+  h1Prefix?: 'chinese' | 'numeric' | 'none';
+  h2Prefix?: 'circles' | 'numeric' | 'none';
   cssVariables?: Record<string, string>;
   customCss?: string;
 }
@@ -54,6 +65,7 @@ export interface ExtractedTheme {
   createdAt: string;
   styleConfig: StyleConfig;
   customCss: string;
+  highlightHabits?: HighlightHabit[];
   previewSample?: {
     title: string;
     h2: string;

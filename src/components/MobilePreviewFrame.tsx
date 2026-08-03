@@ -1,5 +1,6 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Article, StyleConfig } from '../types';
+import { getHeadingPrefix, stripHeadingPrefix } from '../utils/headingFormatter';
 
 interface MobilePreviewFrameProps {
   article: Article;
@@ -104,6 +105,10 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
               article.blocks.map((block) => {
                 switch (block.type) {
                   case 'heading1': {
+                    const prefix = getHeadingPrefix('heading1', block.id, article.blocks, styleConfig);
+                    const cleanText = stripHeadingPrefix(block.content);
+                    const displayText = prefix + cleanText;
+
                     if (styleConfig.headingStyle === 'solid-bg') {
                       return (
                         <div key={block.id} className="mt-6 mb-3">
@@ -111,7 +116,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             className="text-[18px] font-bold text-white px-3 py-2 rounded-md"
                             style={{ backgroundColor: primaryColor }}
                           >
-                            {block.content}
+                            {displayText}
                           </h2>
                         </div>
                       );
@@ -125,7 +130,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             SECTION
                           </span>
                           <h2 className="text-[18px] font-bold mt-1" style={{ color: primaryColor }}>
-                            {block.content}
+                            {displayText}
                           </h2>
                         </div>
                       );
@@ -133,7 +138,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                       return (
                         <div key={block.id} className="mt-6 mb-3 pb-1 border-b-2" style={{ borderColor: primaryColor }}>
                           <h2 className="text-[18px] font-bold" style={{ color: primaryColor }}>
-                            {block.content}
+                            {displayText}
                           </h2>
                         </div>
                       );
@@ -145,19 +150,28 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             className="text-[18px] font-bold pl-3"
                             style={{ borderLeft: `4px solid ${primaryColor}`, color: primaryColor }}
                           >
-                            {block.content}
+                            {displayText}
                           </h2>
                         </div>
                       );
                     }
                   }
 
-                  case 'heading2':
+                  case 'heading2': {
+                    const prefix = getHeadingPrefix('heading2', block.id, article.blocks, styleConfig);
+                    const cleanText = stripHeadingPrefix(block.content);
+                    const displayText = prefix + cleanText;
+
                     return (
-                      <h3 key={block.id} className="text-[16px] font-bold text-[#1b1c1c] mt-5 mb-2">
-                        {block.content}
+                      <h3 
+                        key={block.id} 
+                        className="text-[16px] font-bold text-[#1b1c1c] mt-5 mb-2 pl-2"
+                        style={{ borderLeft: `3px solid ${primaryColor}` }}
+                      >
+                        {displayText}
                       </h3>
                     );
+                  }
 
                   case 'image':
                     return (
@@ -212,11 +226,21 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
 
                   case 'bullet_list':
                     return (
-                      <ul key={block.id} className="list-disc pl-5 my-2 text-sm text-gray-800 space-y-1">
+                      <div key={block.id} className="my-3 space-y-2">
                         {block.content.split('\n').filter(Boolean).map((item, idx) => (
-                          <li key={idx}><RenderInline text={item.replace(/^[•\-\*]\s*/, '')} primaryColor={primaryColor} /></li>
+                          <div key={idx} className="flex items-start text-sm text-gray-800 leading-relaxed">
+                            <span 
+                              className="mr-2 font-bold select-none flex-shrink-0" 
+                              style={{ color: primaryColor }}
+                            >
+                              •
+                            </span>
+                            <span className="flex-1">
+                              <RenderInline text={item.replace(/^[•\-\*]\s*/, '')} primaryColor={primaryColor} />
+                            </span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     );
 
                   case 'divider':

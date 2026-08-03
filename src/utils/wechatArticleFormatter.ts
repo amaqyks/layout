@@ -17,10 +17,11 @@ const makeId = () => `b_fmt_${Date.now()}_${Math.random().toString(36).substring
  * 9. Callout 密度限制（全文≤2个）
  */
 function postProcessBlocks(blocks: ContentBlock[]): ContentBlock[] {
-  // Rule 1: Remove empty blocks
+  // Rule 1: Remove empty blocks or blocks containing only stray list bullets/markdown characters
   let cleaned = blocks.filter(b => {
     const txt = (b.content || '').trim();
     if (b.type === 'divider') return true;
+    if (/^[•\-\*\s]+$/.test(txt)) return false;
     return txt.length > 0;
   });
 

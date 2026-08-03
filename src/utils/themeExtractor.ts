@@ -1,4 +1,4 @@
-﻿import { StyleConfig, ExtractedTheme } from '../types';
+import { StyleConfig, ExtractedTheme } from '../types';
 
 /**
  * Helper to convert rgb(r, g, b) or rgba to Hex color
@@ -271,6 +271,42 @@ ${accentCardCss}
 
   const themeId = `extracted_${Date.now()}`;
 
+  const highlightHabits: import('../types').HighlightHabit[] = [];
+  
+  if (extractedH2Color && extractedH2Color !== '#000000' && extractedH2Color !== '#333333') {
+    highlightHabits.push({
+      name: '核心结论加粗变色',
+      style: `加粗 + 主色调 (${extractedH2Color})`,
+      scene: '章节总结 / 核心观点 / 强调句',
+      badgeColor: extractedH2Color,
+    });
+  } else if (primaryColor) {
+    highlightHabits.push({
+      name: '关键信息主色强调',
+      style: `加粗 + 主色调 (${primaryColor})`,
+      scene: '重要数据 / 核心观点',
+      badgeColor: primaryColor,
+    });
+  }
+
+  if (extractedCardBg) {
+    highlightHabits.push({
+      name: '强调卡片',
+      style: `带背景色块 (${extractedCardBg}) + 边框`,
+      scene: '重要提示 / 案例拆解 / 步骤说明',
+      badgeColor: extractedCardBg,
+    });
+  }
+
+  if (extractedQuoteBg || extractedQuoteBorder) {
+    highlightHabits.push({
+      name: '金句引用框',
+      style: `左侧边框 (${extractedQuoteBorder || primaryColor}) + 背景色`,
+      scene: '经典名言 / 客户评价 / 观点引用',
+      badgeColor: extractedQuoteBorder || primaryColor,
+    });
+  }
+
   return {
     id: themeId,
     name: titleMeta.length > 20 ? `${titleMeta.slice(0, 18)}... 模板` : `${titleMeta} 模板`,
@@ -294,6 +330,7 @@ ${accentCardCss}
       customCss,
     },
     customCss,
+    highlightHabits,
     previewSample: {
       title: titleMeta,
       h2: '逆向提取的二级标题',

@@ -1,14 +1,21 @@
-﻿import { ContentBlock, Article, StyleConfig } from '../types';
+import { ContentBlock, Article, StyleConfig } from '../types';
+import { getHeadingPrefix, stripHeadingPrefix } from './headingFormatter';
 
 /** Renders inline markdown markup **bold** and *italic* as HTML tags */
 export function formatInlineMarkdown(text: string, primaryColor?: string): string {
   if (!text) return '';
-  let cleaned = text.replace(/^#{1,6}\s*/, '').trim();
+  // Strip leading heading markers
+  let cleaned = text.replace(/^#{1,6}\s*/gm, '').trim();
   // **bold** → <strong>
   cleaned = cleaned.replace(/\*\*(.+?)\*\*/g, `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">$1</strong>`);
-  // *italic* → <em>
-  cleaned = cleaned.replace(/\*(.+?)\*/g, '<em>$1</em>');
-  return cleaned.replace(/^[#*]+\s*$/g, '').replace(/\*/g, '').replace(/^#+\s*/g, '');
+  cleaned = cleaned.replace(/__(.+?)__/g, `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">$1</strong>`);
+  // *italic* → <em> (single asterisks only)
+  cleaned = cleaned.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+  cleaned = cleaned.replace(/(?<!_)_([^_]+?)_(?!_)/g, '<em>$1</em>');
+  // Strip residual markdown characters
+  cleaned = cleaned.replace(/\*/g, '');
+  cleaned = cleaned.replace(/^>\s*/gm, '');
+  return cleaned;
 }
 
 export interface DoocsThemeJSON {
@@ -188,13 +195,25 @@ export function renderArticleWithDoocsTheme(article: Article, themeJSON: DoocsTh
             decStyle = `border-left: ${headingComp.decoratorWidth || '4px'} solid ${headingComp.decoratorColor || '#07C160'}; padding-left: 12px; color: ${headingComp.color || '#07C160'};`;
         }
 
-        const cleanTitle = formatted.replace(/<[^>]+>/g, '');
+        const styleConfig: StyleConfig = article.styleConfig || {
+          primaryColor: themeJSON.global.link?.color || '#07C160',
+          fontFamily: themeJSON.global.body.fontFamily || '-apple-system-font',
+          fontSize: parseFloat(themeJSON.global.body.fontSize) || 16,
+          lineHeight: parseFloat(themeJSON.global.body.lineHeight) || 1.75,
+          paragraphSpacing: parseFloat(themeJSON.global.body.paragraphSpacing || '16') || 16,
+          headingStyle: decoratorType === 'bg-block' ? 'solid-bg' : decoratorType === 'bottom-line' ? 'bottom-line' : 'left-border',
+          quoteStyle: 'simple',
+        };
+
+        const prefix = getHeadingPrefix(block.type as 'heading1' | 'heading2', block.id, article.blocks, styleConfig);
+        const cleanTitleText = stripHeadingPrefix(formatted.replace(/<[^>]+>/g, ''));
+        const cleanTitle = prefix + cleanTitleText;
         const isPrimaryHeading = block.type === 'heading1';
         const headingTagStyle = isPrimaryHeading
           ? decStyle
-          : `color: ${globalBody.color}; border-bottom: 1px solid ${(headingComp.decoratorColor || '#07C160')}33; padding-bottom: 6px;`;
+          : `border-left: 3px solid ${(headingComp.decoratorColor || '#07C160')}; padding-left: 8px; color: ${globalBody.color}; margin-left: 4px;`;
         return `<section style="margin-top: ${isPrimaryHeading ? (headingComp.margin ? headingComp.margin.split(' ')[0] : '30px') : '22px'}; margin-bottom: ${isPrimaryHeading ? '16px' : '12px'};">
-            <h2 style="${headingTagStyle} font-size: ${isPrimaryHeading ? (headingComp.fontSize || '21px') : '18px'}; font-weight: ${headingComp.fontWeight || 'bold'}; margin: 0; ${alignStyle}">
+            <h2 style="${headingTagStyle} font-size: ${isPrimaryHeading ? (headingComp.fontSize || '21px') : '17px'}; font-weight: ${headingComp.fontWeight || 'bold'}; margin: 0; ${alignStyle}">
               ${cleanTitle}
             </h2>
           </section>`;
@@ -260,8 +279,16 @@ export function renderArticleWithDoocsTheme(article: Article, themeJSON: DoocsTh
 
       case 'bullet_list': {
         const items = block.content.split('\n').filter(Boolean);
-        const listItems = items.map(item => `<li style="margin-bottom: 6px;">${formatInlineMarkdown(item.replace(/^[•\-\*]\s*/, ''), themeJSON.global.link?.color)}</li>`).join('');
-        return `<ul style="margin-top: 14px; margin-bottom: 18px; padding-left: 22px; color: ${globalBody.color}; line-height: ${globalBody.lineHeight};">${listItems}</ul>`;
+        const listItems = items.map(item => {
+          const cleanedText = formatInlineMarkdown(item.replace(/^[•\-\*]\s*/, ''), themeJSON.global.link?.color);
+          return `
+            <section style="display: flex; align-items: flex-start; margin-bottom: 8px; font-size: ${globalBody.fontSize}; line-height: ${globalBody.lineHeight}; color: ${globalBody.color};">
+              <span style="color: ${themeJSON.global.link?.color || '#07C160'}; margin-right: 8px; font-weight: bold; flex-shrink: 0; line-height: inherit;">•</span>
+              <span style="flex-grow: 1; line-height: inherit;">${cleanedText}</span>
+            </section>
+          `;
+        }).join('');
+        return `<section style="margin-top: 14px; margin-bottom: 18px; box-sizing: border-box;">${listItems}</section>`;
       }
 
       case 'divider': {

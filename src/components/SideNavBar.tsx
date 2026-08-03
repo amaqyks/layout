@@ -5,14 +5,12 @@ interface SideNavBarProps {
   currentTab: NavTab;
   onTabChange: (tab: NavTab) => void;
   onNewArticle: () => void;
-  onNewTemplate: () => void;
 }
 
 export const SideNavBar: React.FC<SideNavBarProps> = ({
   currentTab,
   onTabChange,
   onNewArticle,
-  onNewTemplate,
 }) => {
   return (
     <aside className="fixed left-0 top-0 h-full w-[230px] flex flex-col py-5 bg-white border-r border-[#e4e2e1] z-50 select-none shadow-sm">
@@ -89,14 +87,6 @@ export const SideNavBar: React.FC<SideNavBarProps> = ({
 
       {/* Bottom Action Buttons */}
       <div className="mt-auto px-4 space-y-3">
-        <button
-          onClick={onNewTemplate}
-          className="w-full py-2.5 rounded-xl bg-[#07C160] text-white font-medium text-sm flex items-center justify-center gap-2 shadow-sm hover:opacity-90 active:scale-98 transition-all cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          新建模板
-        </button>
-
         <button
           onClick={onNewArticle}
           className="w-full py-2.5 rounded-xl bg-[#006d33] text-white font-medium text-sm flex items-center justify-center gap-2 shadow-sm hover:opacity-90 active:scale-98 transition-all cursor-pointer"

@@ -10,8 +10,35 @@ import { ContentCanvas, ContentCanvasHandle } from './components/ContentCanvas';
 import { MobilePreviewFrame } from './components/MobilePreviewFrame';
 import { StyleEditorPanel } from './components/StyleEditorPanel';
 import { FloatingActionToolbar } from './components/FloatingActionToolbar';
+import { TemplateSwitcherModal } from './components/TemplateSwitcherModal';
 import { copyToWeChatClipboard } from './utils/wechatExporter';
 import { formatArticleByWechatSkill, parseFormattedMarkdownToBlocks } from './utils/wechatArticleFormatter';
+
+// Sanitize garbled text that may have been persisted to localStorage from previous bugs
+function sanitizeStoredText(text: string): string {
+  if (!text) return text;
+  // Remove known garbled Unicode patterns: duplicated Chinese with corrupt chars in between
+  // Match patterns like "未命名文章±未命名文章", "微信排版助手Ű微信排版助手", etc.
+  return text
+    .replace(/[\u00b1\u00b6\u0100-\u02FF\u0400-\u04FF\u0600-\u06FF\u073D\uBFAB\uFFEA][\u4e00-\u9fff\w\s\u3000-\u303F\uFF00-\uFFEF]*/g, '')
+    .replace(/\?\?\s*/g, '')
+    .replace(/\.{4,}/g, '...')
+    .trim();
+}
+
+function sanitizeArticles(articles: Article[]): Article[] {
+  return articles.map(art => ({
+    ...art,
+    title: sanitizeStoredText(art.title),
+    author: sanitizeStoredText(art.author),
+    description: art.description ? sanitizeStoredText(art.description) : art.description,
+    blocks: art.blocks.map(b => ({
+      ...b,
+      content: sanitizeStoredText(b.content),
+      caption: b.caption ? sanitizeStoredText(b.caption) : b.caption,
+    })),
+  }));
+}
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<NavTab>('editing');
@@ -22,7 +49,7 @@ export default function App() {
   const [articles, setArticles] = useState<Article[]>(() => {
     const saved = localStorage.getItem('wechat_editor_articles');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { return sanitizeArticles(JSON.parse(saved)); } catch (e) { console.error(e); }
     }
     return SAMPLE_ARTICLES;
   });
@@ -31,7 +58,28 @@ export default function App() {
   const [templates, setTemplates] = useState<Article[]>(() => {
     const saved = localStorage.getItem('wechat_editor_templates');
     if (saved) {
-      try { return JSON.parse(saved); } catch (e) { console.error(e); }
+      try { 
+        const parsed = sanitizeArticles(JSON.parse(saved));
+        // Merge missing styleConfig/highlightHabits into default templates from SAMPLE_TEMPLATES
+        const updated = parsed.map(tpl => {
+          if (tpl.id.startsWith('tpl-')) {
+            const defaultTpl = SAMPLE_TEMPLATES.find(st => st.id === tpl.id);
+            if (defaultTpl) {
+              const hasValidStyle = tpl.styleConfig && Object.keys(tpl.styleConfig).length > 0 && tpl.styleConfig.primaryColor;
+              return {
+                ...tpl,
+                styleConfig: hasValidStyle ? tpl.styleConfig : defaultTpl.styleConfig,
+                highlightHabits: (tpl.highlightHabits && tpl.highlightHabits.length > 0) ? tpl.highlightHabits : defaultTpl.highlightHabits,
+              };
+            }
+          }
+          return tpl;
+        });
+        
+        // Append brand new default templates that don't exist in localStorage
+        const missing = SAMPLE_TEMPLATES.filter(st => !updated.some(ut => ut.id === st.id));
+        return [...updated, ...missing];
+      } catch (e) { console.error(e); }
     }
     return SAMPLE_TEMPLATES;
   });
@@ -47,8 +95,8 @@ export default function App() {
   });
 
   const [isStylePanelOpen, setIsStylePanelOpen] = useState<boolean>(true);
+  const [isTemplateSwitcherOpen, setIsTemplateSwitcherOpen] = useState<boolean>(false);
   const [isAiWorking, setIsAiWorking] = useState<boolean>(false);
-  const [layoutSuggestion, setLayoutSuggestion] = useState<string>('');
 
   // Sync to LocalStorage
   useEffect(() => {
@@ -127,19 +175,19 @@ export default function App() {
       type,
       content:
         type === 'heading1'
-          ? '一级标题一级标题'
+          ? '一级标题'
           : type === 'heading2'
-          ? '二级标题¶二级标题'
+          ? '二级标题'
           : type === 'quote'
-          ? '在此处写入精选引用...ڴ˴在此处写入精选引用...д在此处写入精选引用...뾫ѡ在此处写入精选引用......'
+          ? '在此处写入精选引用...'
           : type === 'callout'
-          ? '在此处写入特别强调的重点或总结ڴ在此处写入特别强调的重点或总结д在此处写入特别强调的重点或总结Ҫ在此处写入特别强调的重点或总结ܽ在此处写入特别强调的重点或总结'
+          ? '在此处写入特别强调的重点或总结'
           : type === 'image'
           ? 'https://lh3.googleusercontent.com/aida-public/AB6AXuBUhAhGK4g1LR2VqeAgo9g0EjAQ8DZxrVsP38Po1y4oAP8NbH3TDU4WMYhIJ7P4nMa4tyNfgSZH82_GMbFRePmFS6Vi4Wh2XytCAlPm6mka8hc9APMx5UT6H6D1GgwuekWVNs86BExiEu0WvI_0d67Q3vPFaK1UmoP6YS3Kf1x85t1EGzY6XrS-Xqmv0unIwpeYBSXvmjnYuwWhnIW8xHAkuIohwepbAfXh-5rC03wlMKSrYX5hOqq5'
           : type === 'divider'
           ? ''
-          : '在此输入内容......',
-      caption: type === 'image' ? 'ͼƬ˵图片说明' : type === 'callout' ? '?? 📌 重点提示ص📌 重点提示ʾ' : undefined,
+          : '在此输入内容...',
+      caption: type === 'image' ? '图片说明' : type === 'callout' ? '📌 重点提示' : undefined,
     };
 
     setArticles((prev) =>
@@ -156,8 +204,8 @@ export default function App() {
   const handleCreateNewArticle = () => {
     const newArticle: Article = {
       id: `proj_${Date.now()}`,
-      title: '未命名文章±未命名文章...',
-      author: '΢微信排版助手Ű微信排版助手',
+      title: '未命名文章',
+      author: '',
       date: new Date().toISOString().slice(0, 10),
       category: '提取 · 模板',
       coverImage: '',
@@ -165,7 +213,7 @@ export default function App() {
         {
           id: `b_${Date.now()}_1`,
           type: 'paragraph',
-          content: '在此开始撰写您的文章￪ʼ׫д在此开始撰写您的文章...',
+          content: '在此开始撰写您的文章...',
         },
       ],
       updatedAt: new Date().toLocaleDateString('zh-CN'),
@@ -181,7 +229,8 @@ export default function App() {
       ...currentArticle,
       id: `tpl_${Date.now()}`,
       isTemplate: true,
-      description: `用于「ڡ用于「${currentArticle.title}」的专属排版模板」的专属排版模板`,
+      description: `用于「${currentArticle.title}」的专属排版模板`,
+      styleConfig: styleConfig,
     };
     setTemplates((prev) => [...prev, newTemplate]);
   };
@@ -202,7 +251,7 @@ export default function App() {
     const dup: Article = {
       ...article,
       id: `proj_${Date.now()}`,
-      title: `${article.title} (模板模板)`,
+      title: `${article.title} (副本)`,
       blocks: article.blocks.map((b) => ({ ...b, id: `b_${Date.now()}_${Math.random().toString(36).substring(2, 6)}` })),
       updatedAt: new Date().toLocaleDateString('zh-CN'),
     };
@@ -219,6 +268,9 @@ export default function App() {
     };
     setArticles((prev) => [...prev, newArticle]);
     setActiveArticleId(newArticle.id);
+    if (template.styleConfig) {
+      setStyleConfig(template.styleConfig);
+    }
     setCurrentTab('editing');
   };
 
@@ -316,10 +368,6 @@ export default function App() {
             )
           );
         }
-        // Show layout suggestions if available
-        if (data.layoutSuggestion) {
-          setLayoutSuggestion(data.layoutSuggestion);
-        }
       }
     } catch (e) {
       console.error('AI Layout Agent failed:', e);
@@ -341,7 +389,6 @@ export default function App() {
         currentTab={currentTab}
         onTabChange={(tab) => setCurrentTab(tab)}
         onNewArticle={handleCreateNewArticle}
-        onNewTemplate={handleCreateNewTemplate}
       />
 
       {/* Main Container Area Shifted right for 230px sidebar */}
@@ -388,23 +435,6 @@ export default function App() {
                 onFormatInline={handleFormatInline}
               />
 
-              {/* AI Layout Suggestions Banner */}
-              {layoutSuggestion && (
-                <div className="mx-5 mt-2 px-4 py-3 bg-[#f0faf4] border border-[#07C160]/20 rounded-lg text-xs text-[#3d4a3d] leading-relaxed relative">
-                  <button
-                    onClick={() => setLayoutSuggestion('')}
-                    className="absolute top-2 right-2 p-0.5 rounded hover:bg-[#07C160]/10 text-[#5d5f5f] cursor-pointer"
-                  >
-                    <span className="material-symbols-outlined text-[16px]">close</span>
-                  </button>
-                  {layoutSuggestion.split('\n').map((line, i) => (
-                    <p key={i} className={line.startsWith('> - **') ? 'font-medium text-[#006d33]' : ''}>
-                      {line.replace(/^> /, '')}
-                    </p>
-                  ))}
-                </div>
-              )}
-
               {/* Editable Article Content Canvas */}
               <ContentCanvas
                 ref={contentCanvasRef}
@@ -438,11 +468,26 @@ export default function App() {
             <FloatingActionToolbar
               isStylePanelOpen={isStylePanelOpen}
               onToggleStylePanel={() => setIsStylePanelOpen(!isStylePanelOpen)}
+              onToggleTemplateSwitcher={() => setIsTemplateSwitcherOpen(!isTemplateSwitcherOpen)}
               onSaveTemplate={handleCreateNewTemplate}
-              onSaveDraft={handleSaveDraft}
               onCopyWeChat={() => copyToWeChatClipboard(currentArticle, styleConfig)}
-              lastSavedAt={lastSavedAt}
             />
+
+            {/* Template Switcher Modal */}
+            {isTemplateSwitcherOpen && (
+              <TemplateSwitcherModal
+                currentArticle={currentArticle}
+                currentStyleConfig={styleConfig}
+                templates={templates}
+                onClose={() => setIsTemplateSwitcherOpen(false)}
+                onApplyTemplate={(tpl) => {
+                  if (tpl.styleConfig) {
+                    setStyleConfig(tpl.styleConfig);
+                  }
+                  setIsTemplateSwitcherOpen(false);
+                }}
+              />
+            )}
           </div>
         )}
       </main>

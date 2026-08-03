@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { BlockType } from '../types';
 
 interface FormattingToolbarProps {
@@ -7,7 +7,6 @@ interface FormattingToolbarProps {
   onAIPolish?: () => void;
   isAiWorking?: boolean;
   isStylePanelOpen?: boolean;
-  onFormatInline?: (format: 'bold' | 'italic') => void;
 }
 
 export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
@@ -16,7 +15,6 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
   onAIPolish,
   isAiWorking = false,
   isStylePanelOpen = false,
-  onFormatInline,
 }) => {
   const [showAddMenu, setShowAddMenu] = useState(false);
 
@@ -33,24 +31,6 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
 
   return (
     <div className="h-12 border-b border-[#e4e2e1] flex items-center px-4 gap-2 bg-white sticky top-0 z-20 shadow-2xs select-none">
-      {/* Inline Formatting: Bold & Italic */}
-      <div className="flex items-center gap-0.5 border-r border-[#e4e2e1] pr-3 mr-1">
-        <button
-          title="加粗选中文字 (Ctrl+B)"
-          onClick={() => onFormatInline?.('bold')}
-          className="p-1.5 rounded hover:bg-[#f6f3f2] text-[#3d4a3d] transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[20px]">format_bold</span>
-        </button>
-        <button
-          title="斜体选中文字 (Ctrl+I)"
-          onClick={() => onFormatInline?.('italic')}
-          className="p-1.5 rounded hover:bg-[#f6f3f2] text-[#3d4a3d] transition-colors cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[20px]">format_italic</span>
-        </button>
-      </div>
-
       {/* Quick Insert Blocks */}
       <div className="flex items-center gap-1">
         <button

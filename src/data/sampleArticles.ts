@@ -167,6 +167,18 @@ export const SAMPLE_TEMPLATES: Article[] = [
     updatedAt: '2023年10月24日',
     isTemplate: true,
     description: '适合每日资讯、清爽排版与快讯发布的标准极简风格。',
+    styleConfig: {
+      primaryColor: '#07C160',
+      fontFamily: '-apple-system-font, BlinkMacSystemFont, "Helvetica Neue", sans-serif',
+      fontSize: 16,
+      lineHeight: 1.75,
+      paragraphSpacing: 16,
+      headingStyle: 'left-border',
+      quoteStyle: 'simple'
+    },
+    highlightHabits: [
+      { name: '核心结论加粗', style: '加粗 + 主色调', scene: '今日要闻 / 核心提要', badgeColor: '#07C160' }
+    ],
     blocks: [
       {
         id: 't1_b1',
@@ -201,6 +213,18 @@ export const SAMPLE_TEMPLATES: Article[] = [
     updatedAt: '2023年10月24日',
     isTemplate: true,
     description: '长篇故事、深度访谈与人文专访的理想大留白排版。',
+    styleConfig: {
+      primaryColor: '#722ed1',
+      fontFamily: 'Source Serif 4, serif',
+      fontSize: 15,
+      lineHeight: 1.9,
+      paragraphSpacing: 20,
+      headingStyle: 'bottom-line',
+      quoteStyle: 'simple'
+    },
+    highlightHabits: [
+      { name: '金句留白', style: '斜体 + 段落前留白', scene: '访谈引言 / 核心对话', badgeColor: '#722ed1' }
+    ],
     blocks: [
       {
         id: 't2_b1',
@@ -229,6 +253,18 @@ export const SAMPLE_TEMPLATES: Article[] = [
     updatedAt: '2023年10月24日',
     isTemplate: true,
     description: '通过强烈的视觉冲击、亮点卡片与参数规格引导读者转化。',
+    styleConfig: {
+      primaryColor: '#1890ff',
+      fontFamily: '-apple-system-font, sans-serif',
+      fontSize: 17,
+      lineHeight: 1.6,
+      paragraphSpacing: 14,
+      headingStyle: 'solid-bg',
+      quoteStyle: 'card'
+    },
+    highlightHabits: [
+      { name: '参数强调卡片', style: '浅色背景框 + 边框', scene: '产品亮点 / 技术规格', badgeColor: '#1890ff' }
+    ],
     blocks: [
       {
         id: 't3_b1',
@@ -258,6 +294,18 @@ export const SAMPLE_TEMPLATES: Article[] = [
     updatedAt: '2023年10月24日',
     isTemplate: true,
     description: '让食谱、美味图文与探店心得生动呈现在手机端的精致模板。',
+    styleConfig: {
+      primaryColor: '#ff5722',
+      fontFamily: '-apple-system-font, sans-serif',
+      fontSize: 16,
+      lineHeight: 1.8,
+      paragraphSpacing: 18,
+      headingStyle: 'badge',
+      quoteStyle: 'card'
+    },
+    highlightHabits: [
+      { name: '食材黄底', style: '黄色背景高亮', scene: '重要食材 / 调料提示', badgeColor: '#ff5722' }
+    ],
     blocks: [
       {
         id: 't4_b1',
@@ -287,6 +335,18 @@ export const SAMPLE_TEMPLATES: Article[] = [
     updatedAt: '2023年10月24日',
     isTemplate: true,
     description: '适合教程指南、课程大纲与结构化知识分享的清爽排版。',
+    styleConfig: {
+      primaryColor: '#006d33',
+      fontFamily: 'Be Vietnam Pro, sans-serif',
+      fontSize: 15,
+      lineHeight: 1.7,
+      paragraphSpacing: 16,
+      headingStyle: 'left-border',
+      quoteStyle: 'card'
+    },
+    highlightHabits: [
+      { name: '术语定义框', style: '主色调浅色背景 + 左边框', scene: '概念解释 / 学习目标', badgeColor: '#006d33' }
+    ],
     blocks: [
       {
         id: 't5_b1',
@@ -308,15 +368,28 @@ export const SAMPLE_TEMPLATES: Article[] = [
   },
 
   {
-    id: 'tpl-pinecone',
-    title: '松果时刻：深度长文排版范例',
-    author: '微信排版助手',
-    date: '2025-06-15',
-    category: '解析 ・ 模板',
+    id: 'tpl-pinecone-blue',
+    title: '松果时刻 • 科技深蓝',
+    author: '深度分析者',
+    date: '2023-10-24',
+    category: '科技趋势',
     coverImage: '',
-    updatedAt: '2025年6月15日',
+    updatedAt: '2023年10月24日',
     isTemplate: true,
-    description: '参考「松果时刻」深度分析文章风格：开篇金句引子 → 二级标题分章 → 核心观点加粗 → 要点卡片框 → 引用金句穿插。适合深度分析、产品拆解、行业洞察类长文。',
+    description: '深蓝色调，色块背景标题，强调卡片框，适用于科技分析、深度产品拆解。',
+    styleConfig: {
+      primaryColor: '#0f4c81',
+      fontFamily: '-apple-system-font, sans-serif',
+      fontSize: 16,
+      lineHeight: 1.75,
+      paragraphSpacing: 18,
+      headingStyle: 'solid-bg',
+      quoteStyle: 'card'
+    },
+    highlightHabits: [
+      { name: '核心洞察卡片', style: '带蓝色背景与边框', scene: '核心观点 / 摘要', badgeColor: '#0f4c81' },
+      { name: '关键词加粗', style: '加粗 + 深蓝色', scene: '关键痛点 / 专业名词', badgeColor: '#0f4c81' }
+    ],
     blocks: [
       {
         id: 'tpc_b1',
@@ -336,7 +409,7 @@ export const SAMPLE_TEMPLATES: Article[] = [
       {
         id: 'tpc_b4',
         type: 'paragraph',
-        content: '《松果时刻》满足的不是漫画需求，而是 **低压力表达需求**。对于没有写作、绘画天赋的普通人，想分享生活本身就存在心理阻力。而松果时刻把整个流程压缩成：**「上传图片」+「描述事实」** → 一张可以直接分享的完整漫画。',
+        content: '《松果时刻》满足的不是漫画需求，而是 **低压力表达需求**。对于没有写作、绘画天赋 of 普通人，想分享生活本身就存在心理阻力。而松果时刻把整个流程压缩成：**「上传图片」+「描述事实」** → 一张可以直接分享的完整漫画。',
       },
       {
         id: 'tpc_b5',
@@ -390,5 +463,200 @@ export const SAMPLE_TEMPLATES: Article[] = [
         type: 'paragraph',
         content: '过去，漫画创作属于 **「技能型创作」**；而 AI 正在把它逐渐变成 **「想象力型创作」**。未来的创作或许不再受限于天赋和学习成本，普通人可以用各种形式自由展现想象力——这或许也是 AI 发展的一种意义。',
       },
+    ]
+  },
+  {
+    id: 'tpl-pinecone-teal',
+    title: '松果时刻 • 清新墨绿',
+    author: '深度分析者',
+    date: '2023-10-24',
+    category: '商业洞察',
+    coverImage: '',
+    updatedAt: '2023年10月24日',
+    isTemplate: true,
+    description: '墨绿色调，底边线标题，简约引用，适用于清新散文、人文专访、深度阅读。',
+    styleConfig: {
+      primaryColor: '#0a8451',
+      fontFamily: '-apple-system-font, sans-serif',
+      fontSize: 16,
+      lineHeight: 1.75,
+      paragraphSpacing: 18,
+      headingStyle: 'bottom-line',
+      quoteStyle: 'simple'
+    },
+    highlightHabits: [
+      { name: '学术金句', style: '绿色左竖线', scene: '引用文献 / 名言', badgeColor: '#0a8451' },
+      { name: '段落摘要加粗', style: '加粗 + 墨绿色', scene: '章节核心提炼', badgeColor: '#0a8451' }
     ],
-  },];
+    blocks: [
+      {
+        id: 'tpc_b1',
+        type: 'quote',
+        content: '做生活的漫画家。',
+      },
+      {
+        id: 'tpc_b2',
+        type: 'paragraph',
+        content: '这款产品用 AI 把 **表达欲** 从深夜碎碎念，变成了 **自我主演的漫画**。普通人不缺表达欲，缺的是一个 **足够低压力、足够体面、足够有趣** 的出口。',
+      },
+      {
+        id: 'tpc_b3',
+        type: 'heading1',
+        content: '一、这个产品在解决什么问题',
+      },
+      {
+        id: 'tpc_b4',
+        type: 'paragraph',
+        content: '《松果时刻》满足的不是漫画需求，而是 **低压力表达需求**。对于没有写作、绘画天赋 of 普通人，想分享生活本身就存在心理阻力。而松果时刻把整个流程压缩成：**「上传图片」+「描述事实」** → 一张可以直接分享的完整漫画。',
+      },
+      {
+        id: 'tpc_b5',
+        type: 'callout',
+        content: '漫画为用户提供了一个安全的心理缓冲层，让真实情绪能更无负担地流露，同时塑造出「好玩、有创意、懂技术」的个人形象。',
+        caption: '🎭 核心洞察',
+      },
+      {
+        id: 'tpc_b6',
+        type: 'heading1',
+        content: '二、为什么选漫画而不是其他形式',
+      },
+      {
+        id: 'tpc_b7',
+        type: 'paragraph',
+        content: '漫画是当前阶段 **最适合 AI 生成** 的内容媒介之一：漫画天然允许 **风格夸张、细节省略、画面跳跃**，且天然适合分镜结构——可拆解为「分镜 + 场景推进 + 情绪节点 + 对白组织」，恰好契合大模型擅长分步骤、结构化、拆分的特点。',
+      },
+      {
+        id: 'tpc_b8',
+        type: 'quote',
+        content: '长文本 AI 容易过度戏剧化，生成越多越失真。而漫画允许用画面、留白、氛围表达，让用户自己脑补情绪，降低 AI 过度理解的尴尬感。',
+      },
+      {
+        id: 'tpc_b9',
+        type: 'heading1',
+        content: '三、产品现在卡在哪里',
+      },
+      {
+        id: 'tpc_b10',
+        type: 'paragraph',
+        content: '产品真正的矛盾，在于 **记录需求与社区增长之间的冲突**。松果（token）是目前唯一可见的获利通道，想要变现就需要引导用户多生成漫画。但短视频靠 **前几秒刺激** 留住用户，漫画需要一定阅读成本，天然不适合高频 feed。',
+      },
+      {
+        id: 'tpc_b11',
+        type: 'callout',
+        content: '记录行为需要持续的主动投入，缺乏即时正反馈，难以形成习惯。当 AI 生成漫画的新鲜感褪去，用户的表达欲会持续衰减——漫画本质上是社交的软需求，而非硬刚需。',
+        caption: '⚠️ 留存难题',
+      },
+      {
+        id: 'tpc_b12',
+        type: 'heading1',
+        content: '四、它可能往哪里走',
+      },
+      {
+        id: 'tpc_b13',
+        type: 'bullet_list',
+        content: '路线 A：低频人生记录工具——情侣手册、人生日记，形成独属于自己的人生漫画集\n路线 B：兴趣驱动的视觉创作社区——同人圈、OC 圈、跑团、剧本杀等圈层用户',
+      },
+      {
+        id: 'tpc_b14',
+        type: 'paragraph',
+        content: '过去，漫画创作属于 **「技能型创作」**；而 AI 正在把它逐渐变成 **「想象力型创作」**。未来的创作或许不再受限于天赋和学习成本，普通人可以用各种形式自由展现想象力——这或许也是 AI 发展的一种意义。',
+      },
+    ]
+  },
+  {
+    id: 'tpl-pinecone-charcoal',
+    title: '松果时刻 • 极简炭灰',
+    author: '深度分析者',
+    date: '2023-10-24',
+    category: '深度长文',
+    coverImage: '',
+    updatedAt: '2023年10月24日',
+    isTemplate: true,
+    description: '炭黑色调，左侧竖线标题，简约排版，适用于干货分享、极简商业评论。',
+    styleConfig: {
+      primaryColor: '#2c2c2c',
+      fontFamily: '-apple-system-font, sans-serif',
+      fontSize: 16,
+      lineHeight: 1.75,
+      paragraphSpacing: 18,
+      headingStyle: 'left-border',
+      quoteStyle: 'simple'
+    },
+    highlightHabits: [
+      { name: '结论加粗', style: '加粗 + 炭灰色', scene: '章节核心提炼', badgeColor: '#2c2c2c' }
+    ],
+    blocks: [
+      {
+        id: 'tpc_b1',
+        type: 'quote',
+        content: '做生活的漫画家。',
+      },
+      {
+        id: 'tpc_b2',
+        type: 'paragraph',
+        content: '这款产品用 AI 把 **表达欲** 从深夜碎碎念，变成了 **自我主演的漫画**。普通人不缺表达欲，缺的是一个 **足够低压力、足够体面、足够有趣** 的出口。',
+      },
+      {
+        id: 'tpc_b3',
+        type: 'heading1',
+        content: '一、这个产品在解决什么问题',
+      },
+      {
+        id: 'tpc_b4',
+        type: 'paragraph',
+        content: '《松果时刻》满足的不是漫画需求，而是 **低压力表达需求**。对于没有写作、绘画天赋 of 普通人，想分享生活本身就存在心理阻力。而松果时刻把整个流程压缩成：**「上传图片」+「描述事实」** → 一张可以直接分享的完整漫画。',
+      },
+      {
+        id: 'tpc_b5',
+        type: 'callout',
+        content: '漫画为用户提供了一个安全的心理缓冲层，让真实情绪能更无负担地流露，同时塑造出「好玩、有创意、懂技术」的个人形象。',
+        caption: '🎭 核心洞察',
+      },
+      {
+        id: 'tpc_b6',
+        type: 'heading1',
+        content: '二、为什么选漫画而不是其他形式',
+      },
+      {
+        id: 'tpc_b7',
+        type: 'paragraph',
+        content: '漫画是当前阶段 **最适合 AI 生成** 的内容媒介之一：漫画天然允许 **风格夸张、细节省略、画面跳跃**，且天然适合分镜结构——可拆解为「分镜 + 场景推进 + 情绪节点 + 对白组织」，恰好契合大模型擅长分步骤、结构化、拆分的特点。',
+      },
+      {
+        id: 'tpc_b8',
+        type: 'quote',
+        content: '长文本 AI 容易过度戏剧化，生成越多越失真。而漫画允许用画面、留白、氛围表达，让用户自己脑补情绪，降低 AI 过度理解的尴尬感。',
+      },
+      {
+        id: 'tpc_b9',
+        type: 'heading1',
+        content: '三、产品现在卡在哪里',
+      },
+      {
+        id: 'tpc_b10',
+        type: 'paragraph',
+        content: '产品真正的矛盾，在于 **记录需求与社区增长之间的冲突**。松果（token）是目前唯一可见的获利通道，想要变现就需要引导用户多生成漫画。但短视频靠 **前几秒刺激** 留住用户，漫画需要一定阅读成本，天然不适合高频 feed。',
+      },
+      {
+        id: 'tpc_b11',
+        type: 'callout',
+        content: '记录行为需要持续的主动投入，缺乏即时正反馈，难以形成习惯。当 AI 生成漫画的新鲜感褪去，用户的表达欲会持续衰减——漫画本质上是社交的软需求，而非硬刚需。',
+        caption: '⚠️ 留存难题',
+      },
+      {
+        id: 'tpc_b12',
+        type: 'heading1',
+        content: '四、它可能往哪里走',
+      },
+      {
+        id: 'tpc_b13',
+        type: 'bullet_list',
+        content: '路线 A：低频人生记录工具——情侣手册、人生日记，形成独属于自己的人生漫画集\n路线 B：兴趣驱动的视觉创作社区——同人圈、OC 圈、跑团、剧本杀等圈层用户',
+      },
+      {
+        id: 'tpc_b14',
+        type: 'paragraph',
+        content: '过去，漫画创作属于 **「技能型创作」**；而 AI 正在把它逐渐变成 **「想象力型创作」**。未来的创作或许不再受限于天赋和学习成本，普通人可以用各种形式自由展现想象力——这或许也是 AI 发展的一种意义。',
+      },
+    ]
+  }];

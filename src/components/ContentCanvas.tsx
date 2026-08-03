@@ -1,5 +1,6 @@
-﻿import React, { useState, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
+import React, { useState, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { Article, ContentBlock, BlockType, StyleConfig } from '../types';
+import { getHeadingPrefix, stripHeadingPrefix } from '../utils/headingFormatter';
 
 interface ContentCanvasProps {
   article: Article;
@@ -205,7 +206,8 @@ export const ContentCanvas = forwardRef<ContentCanvasHandle, ContentCanvasProps>
                         onChange={(e) => onUpdateBlock(block.id, { content: e.target.value })}
                         placeholder="二级标题..."
                         rows={1}
-                        className="w-full text-[18px] font-bold bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[#1b1c1c]"
+                        className="w-full text-[18px] font-bold bg-transparent border-none focus:outline-none focus:ring-0 resize-none text-[#1b1c1c] pl-2"
+                        style={{ borderLeft: `3px solid ${primaryColor}` }}
                       />
                     </div>
                   )}

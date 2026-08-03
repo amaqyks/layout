@@ -193,33 +193,96 @@ export const TemplateLibrary: React.FC<TemplateLibraryProps> = ({
               </button>
             </div>
 
-            <div className="p-6 overflow-y-auto space-y-4 custom-scrollbar">
+            <div className="p-6 overflow-y-auto space-y-5 custom-scrollbar">
               <div className="p-4 bg-[#f6f3f2] rounded-xl border border-[#e4e2e1] space-y-1">
                 <span className="text-xs font-bold text-[#006d33]">{previewTemplate.category}</span>
-                <p className="text-xs text-[#5d5f5f]">{previewTemplate.description}</p>
+                <p className="text-xs text-[#5d5f5f] leading-relaxed">{previewTemplate.description}</p>
               </div>
 
-              <div className="border-t border-[#e4e2e1] pt-4 space-y-3">
-                {previewTemplate.blocks.map((blk, i) => (
-                  <div key={i} className="text-sm text-[#1b1c1c]">
-                    {blk.type === 'heading1' && (
-                      <h4 className="font-bold text-[#006d33] text-base border-l-3 border-[#07C160] pl-2.5 py-0.5">
-                        {blk.content}
-                      </h4>
-                    )}
-                    {blk.type === 'heading2' && (
-                      <h5 className="font-bold text-[#1b1c1c] text-sm mt-2">
-                        {blk.content}
-                      </h5>
-                    )}
-                    {blk.type === 'paragraph' && <p className="leading-relaxed">{blk.content}</p>}
-                    {blk.type === 'quote' && (
-                      <blockquote className="italic bg-[#07C160]/10 p-3 rounded border-l-3 border-[#07C160]">
-                        {blk.content}
-                      </blockquote>
-                    )}
+              {previewTemplate.styleConfig && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold text-[#1b1c1c] uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-[#07C160]">palette</span>
+                    全局排版变量
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-[#fbf9f8] border border-[#e4e2e1] p-2.5 rounded-lg flex justify-between items-center">
+                      <span className="text-[11px] text-[#888888]">主色调</span>
+                      <div className="flex items-center gap-1.5">
+                        <span className="w-3 h-3 rounded-full border border-black/10" style={{ backgroundColor: previewTemplate.styleConfig.primaryColor }} />
+                        <span className="text-xs font-mono font-medium text-[#444]">{previewTemplate.styleConfig.primaryColor}</span>
+                      </div>
+                    </div>
+                    <div className="bg-[#fbf9f8] border border-[#e4e2e1] p-2.5 rounded-lg flex justify-between items-center">
+                      <span className="text-[11px] text-[#888888]">正文字号</span>
+                      <span className="text-xs font-mono font-medium text-[#444]">{previewTemplate.styleConfig.fontSize}px</span>
+                    </div>
+                    <div className="bg-[#fbf9f8] border border-[#e4e2e1] p-2.5 rounded-lg flex justify-between items-center">
+                      <span className="text-[11px] text-[#888888]">正文行高</span>
+                      <span className="text-xs font-mono font-medium text-[#444]">{previewTemplate.styleConfig.lineHeight}</span>
+                    </div>
+                    <div className="bg-[#fbf9f8] border border-[#e4e2e1] p-2.5 rounded-lg flex justify-between items-center">
+                      <span className="text-[11px] text-[#888888]">段落间距</span>
+                      <span className="text-xs font-mono font-medium text-[#444]">{previewTemplate.styleConfig.paragraphSpacing}px</span>
+                    </div>
                   </div>
-                ))}
+                </div>
+              )}
+
+              {previewTemplate.highlightHabits && previewTemplate.highlightHabits.length > 0 && (
+                <div className="space-y-2">
+                  <h4 className="text-xs font-bold text-[#1b1c1c] uppercase tracking-wider flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-[16px] text-[#ff9800]">flare</span>
+                    高光习惯设定
+                  </h4>
+                  <div className="space-y-2">
+                    {previewTemplate.highlightHabits.map((habit, idx) => (
+                      <div key={idx} className="bg-white border border-[#e4e2e1] p-3 rounded-xl shadow-2xs flex flex-col gap-1.5">
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs font-bold text-[#1b1c1c] flex items-center gap-1.5">
+                            <span className="w-2 h-2 rounded-full" style={{ backgroundColor: habit.badgeColor || '#07C160' }} />
+                            {habit.name}
+                          </span>
+                          <span className="text-[10px] font-mono bg-[#f6f3f2] text-[#5d5f5f] px-1.5 py-0.5 rounded border border-[#e4e2e1]">
+                            触发场景: {habit.scene}
+                          </span>
+                        </div>
+                        <div className="text-[11px] text-[#5d5f5f] bg-[#fbf9f8] p-2 rounded border border-[#e4e2e1] border-dashed">
+                          表现形式：{habit.style}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-[#1b1c1c] uppercase tracking-wider flex items-center gap-1.5">
+                  <span className="material-symbols-outlined text-[16px] text-[#1b1c1c]">article</span>
+                  样式结构预览
+                </h4>
+                <div className="border border-[#e4e2e1] p-4 rounded-xl bg-white shadow-2xs space-y-3">
+                  {previewTemplate.blocks.map((blk, i) => (
+                    <div key={i} className="text-sm text-[#1b1c1c]">
+                      {blk.type === 'heading1' && (
+                        <h4 className="font-bold text-[#006d33] text-base border-l-3 border-[#07C160] pl-2.5 py-0.5">
+                          {blk.content}
+                        </h4>
+                      )}
+                      {blk.type === 'heading2' && (
+                        <h5 className="font-bold text-[#1b1c1c] text-sm mt-2">
+                          {blk.content}
+                        </h5>
+                      )}
+                      {blk.type === 'paragraph' && <p className="leading-relaxed">{blk.content}</p>}
+                      {blk.type === 'quote' && (
+                        <blockquote className="italic bg-[#07C160]/10 p-3 rounded border-l-3 border-[#07C160]">
+                          {blk.content}
+                        </blockquote>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 

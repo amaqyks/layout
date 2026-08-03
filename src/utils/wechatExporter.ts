@@ -1,5 +1,6 @@
 import { Article, StyleConfig } from '../types';
 import { renderArticleWithDoocsTheme, styleConfigToDoocsThemeJSON } from './doocsThemeRenderer';
+import { getHeadingPrefix, stripHeadingPrefix } from './headingFormatter';
 
 /**
  * Generates WeChat-compatible inline CSS HTML string from Article and StyleConfig.
@@ -7,18 +8,22 @@ import { renderArticleWithDoocsTheme, styleConfigToDoocsThemeJSON } from './dooc
  */
 export function formatInlineMarkdown(text: string, primaryColor?: string): string {
   if (!text) return '';
-  let cleaned = text.replace(/^#+\s*/g, '').trim();
+  // Strip leading heading markers (e.g. "## Title")
+  let cleaned = text.replace(/^#{1,6}\s*/gm, '').trim();
 
-  // Convert **bold** or __bold__ to <strong> HTML elements, strip raw asterisks
-  cleaned = cleaned.replace(/\*\*(.*?)\*\*/g, (_, match) => `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">${match}</strong>`);
-  cleaned = cleaned.replace(/__(.*?)__/g, (_, match) => `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">${match}</strong>`);
+  // Convert **bold** or __bold__ to <strong> HTML elements
+  cleaned = cleaned.replace(/\*\*(.+?)\*\*/g, (_, match) => `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">${match}</strong>`);
+  cleaned = cleaned.replace(/__(.+?)__/g, (_, match) => `<strong style="font-weight: bold; color: ${primaryColor || '#07C160'};">${match}</strong>`);
   
-  // Convert *italic* or _italic_ to <em>
-  cleaned = cleaned.replace(/\*(.*?)\*/g, '<em>$1</em>');
-  cleaned = cleaned.replace(/_(.*?)_/g, '<em>$1</em>');
+  // Convert *italic* or _italic_ to <em> (only single * not already consumed by bold)
+  cleaned = cleaned.replace(/(?<!\*)\*([^*]+?)\*(?!\*)/g, '<em>$1</em>');
+  cleaned = cleaned.replace(/(?<!_)_([^_]+?)_(?!_)/g, '<em>$1</em>');
 
-  // Strip residual rogue asterisks or hashes
-  return cleaned.replace(/\*/g, '');
+  // Strip any residual markdown characters that shouldn't appear in final output
+  cleaned = cleaned.replace(/\*/g, '');
+  cleaned = cleaned.replace(/^>\s*/gm, '');
+
+  return cleaned;
 }
 
 export function generateWeChatHtml(article: Article, style: StyleConfig): string {
@@ -41,7 +46,10 @@ export function generateLegacyWeChatHtml(article: Article, style: StyleConfig): 
 
     switch (block.type) {
       case 'heading1': {
-        const titleText = formattedContent.replace(/<[^>]+>/g, ''); // strip HTML tags for clean title font
+        const prefix = getHeadingPrefix('heading1', block.id, article.blocks, style);
+        const cleanTitleText = stripHeadingPrefix(formattedContent.replace(/<[^>]+>/g, ''));
+        const titleText = prefix + cleanTitleText;
+
         if (style.headingStyle === 'solid-bg') {
           return `
             <section style="margin-top: 24px; margin-bottom: 16px;">
@@ -80,9 +88,12 @@ export function generateLegacyWeChatHtml(article: Article, style: StyleConfig): 
       }
 
       case 'heading2': {
-        const titleText = formattedContent.replace(/<[^>]+>/g, '');
+        const prefix = getHeadingPrefix('heading2', block.id, article.blocks, style);
+        const cleanTitleText = stripHeadingPrefix(formattedContent.replace(/<[^>]+>/g, ''));
+        const titleText = prefix + cleanTitleText;
+
         return `
-          <h3 style="font-size: 18px; font-weight: bold; color: #1b1c1c; margin-top: 20px; margin-bottom: 12px; ${alignStyle}">
+          <h3 style="font-size: 18px; font-weight: bold; color: #1b1c1c; border-left: 3px solid ${primaryColor}; padding-left: 8px; margin-top: 20px; margin-bottom: 12px; ${alignStyle}">
             ${titleText}
           </h3>
         `;
@@ -116,12 +127,16 @@ export function generateLegacyWeChatHtml(article: Article, style: StyleConfig): 
 
       case 'bullet_list': {
         const items = block.content.split('\n').filter(Boolean);
-        const listHtml = items.map(item => `<li style="margin-bottom: 6px;">${formatInlineMarkdown(item.replace(/^[•\-\*]\s*/, ''), primaryColor)}</li>`).join('');
-        return `
-          <ul style="margin-top: 12px; margin-bottom: 12px; padding-left: 20px; color: #1b1c1c; line-height: ${lineHeight};">
-            ${listHtml}
-          </ul>
-        `;
+        const listHtml = items.map(item => {
+          const cleanedText = formatInlineMarkdown(item.replace(/^[•\-\*]\s*/, ''), primaryColor);
+          return `
+            <section style="display: flex; align-items: flex-start; margin-bottom: 8px; font-size: ${fontSize}; line-height: ${lineHeight}; color: #1b1c1c;">
+              <span style="color: ${primaryColor}; margin-right: 8px; font-weight: bold; flex-shrink: 0; line-height: inherit;">•</span>
+              <span style="flex-grow: 1; line-height: inherit;">${cleanedText}</span>
+            </section>
+          `;
+        }).join('');
+        return `<section style="margin-top: 12px; margin-bottom: 12px;">${listHtml}</section>`;
       }
 
       case 'divider': {
