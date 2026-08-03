@@ -84,11 +84,14 @@ async function startServer() {
   app.post('/api/ai/layout-agent', async (req, res) => {
     try {
       const { title, content } = req.body;
-      const apiKey = process.env.DEEPSEEK_API_KEY || 'sk-bd205bbf08c34ec79c591d879355c516';
+      const apiKey = process.env.DEEPSEEK_API_KEY;
       const apiBase = process.env.DEEPSEEK_API_BASE || 'https://api.deepseek.com';
 
       if (!content || !content.trim()) {
         return res.status(400).json({ success: false, error: '请输入要排版的文章内容' });
+      }
+      if (!apiKey) {
+        return res.status(500).json({ success: false, error: '未配置 DEEPSEEK_API_KEY，请检查服务端环境变量' });
       }
 
       const systemPrompt = `你是一位顶级微信公众号排版专家。你的唯一任务是——为用户的原始文本添加排版结构标记。内容一字不改，只做结构重组。
