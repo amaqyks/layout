@@ -50,9 +50,8 @@ export interface StyleConfig {
   lineHeight: number; // e.g. 1.75
   paragraphSpacing: number; // e.g. 16
   headingStyle: 'left-border' | 'solid-bg' | 'badge' | 'bottom-line' | 'custom';
+  headingNumbering?: 'chinese' | 'arabic' | 'circle' | 'none'; // '一、标题' | '1. 标题' | '① 标题' | '标题'
   quoteStyle: 'simple' | 'card' | 'speech' | 'custom';
-  h1Prefix?: 'chinese' | 'numeric' | 'none';
-  h2Prefix?: 'circles' | 'numeric' | 'none';
   cssVariables?: Record<string, string>;
   customCss?: string;
 }

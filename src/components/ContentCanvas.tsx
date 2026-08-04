@@ -1,6 +1,5 @@
 import React, { useState, useRef, useImperativeHandle, forwardRef, useCallback } from 'react';
 import { Article, ContentBlock, BlockType, StyleConfig } from '../types';
-import { getHeadingPrefix, stripHeadingPrefix } from '../utils/headingFormatter';
 
 interface ContentCanvasProps {
   article: Article;

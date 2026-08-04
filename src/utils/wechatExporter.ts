@@ -1,6 +1,5 @@
 import { Article, StyleConfig } from '../types';
 import { renderArticleWithDoocsTheme, styleConfigToDoocsThemeJSON } from './doocsThemeRenderer';
-import { getHeadingPrefix, stripHeadingPrefix } from './headingFormatter';
 
 /**
  * Generates WeChat-compatible inline CSS HTML string from Article and StyleConfig.
@@ -46,10 +45,7 @@ export function generateLegacyWeChatHtml(article: Article, style: StyleConfig): 
 
     switch (block.type) {
       case 'heading1': {
-        const prefix = getHeadingPrefix('heading1', block.id, article.blocks, style);
-        const cleanTitleText = stripHeadingPrefix(formattedContent.replace(/<[^>]+>/g, ''));
-        const titleText = prefix + cleanTitleText;
-
+        const titleText = formattedContent.replace(/<[^>]+>/g, ''); // strip HTML tags for clean title font
         if (style.headingStyle === 'solid-bg') {
           return `
             <section style="margin-top: 24px; margin-bottom: 16px;">
@@ -88,12 +84,9 @@ export function generateLegacyWeChatHtml(article: Article, style: StyleConfig): 
       }
 
       case 'heading2': {
-        const prefix = getHeadingPrefix('heading2', block.id, article.blocks, style);
-        const cleanTitleText = stripHeadingPrefix(formattedContent.replace(/<[^>]+>/g, ''));
-        const titleText = prefix + cleanTitleText;
-
+        const titleText = formattedContent.replace(/<[^>]+>/g, '');
         return `
-          <h3 style="font-size: 18px; font-weight: bold; color: #1b1c1c; border-left: 3px solid ${primaryColor}; padding-left: 8px; margin-top: 20px; margin-bottom: 12px; ${alignStyle}">
+          <h3 style="font-size: 18px; font-weight: bold; color: #1b1c1c; margin-top: 20px; margin-bottom: 12px; ${alignStyle}">
             ${titleText}
           </h3>
         `;

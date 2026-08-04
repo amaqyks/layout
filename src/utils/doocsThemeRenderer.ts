@@ -1,5 +1,4 @@
 import { ContentBlock, Article, StyleConfig } from '../types';
-import { getHeadingPrefix, stripHeadingPrefix } from './headingFormatter';
 
 /** Renders inline markdown markup **bold** and *italic* as HTML tags */
 export function formatInlineMarkdown(text: string, primaryColor?: string): string {
@@ -195,19 +194,7 @@ export function renderArticleWithDoocsTheme(article: Article, themeJSON: DoocsTh
             decStyle = `border-left: ${headingComp.decoratorWidth || '4px'} solid ${headingComp.decoratorColor || '#07C160'}; padding-left: 12px; color: ${headingComp.color || '#07C160'};`;
         }
 
-        const styleConfig: StyleConfig = article.styleConfig || {
-          primaryColor: themeJSON.global.link?.color || '#07C160',
-          fontFamily: themeJSON.global.body.fontFamily || '-apple-system-font',
-          fontSize: parseFloat(themeJSON.global.body.fontSize) || 16,
-          lineHeight: parseFloat(themeJSON.global.body.lineHeight) || 1.75,
-          paragraphSpacing: parseFloat(themeJSON.global.body.paragraphSpacing || '16') || 16,
-          headingStyle: decoratorType === 'bg-block' ? 'solid-bg' : decoratorType === 'bottom-line' ? 'bottom-line' : 'left-border',
-          quoteStyle: 'simple',
-        };
-
-        const prefix = getHeadingPrefix(block.type as 'heading1' | 'heading2', block.id, article.blocks, styleConfig);
-        const cleanTitleText = stripHeadingPrefix(formatted.replace(/<[^>]+>/g, ''));
-        const cleanTitle = prefix + cleanTitleText;
+        const cleanTitle = formatted.replace(/<[^>]+>/g, '');
         const isPrimaryHeading = block.type === 'heading1';
         const headingTagStyle = isPrimaryHeading
           ? decStyle

@@ -117,29 +117,14 @@ function postProcessBlocks(blocks: ContentBlock[]): ContentBlock[] {
     }
   }
 
-  // Rule 5: Limit headings
-  const headingCount = split.filter(b => b.type === 'heading1' || b.type === 'heading2').length;
-  if (headingCount > 8) {
-    const reduced: ContentBlock[] = [];
-    let hCount = 0;
-    for (const b of split) {
-      if ((b.type === 'heading1' || b.type === 'heading2') && hCount >= 8) {
-        reduced.push({ id: makeId(), type: 'paragraph', content: '**' + b.content + '**' });
-      } else {
-        if (b.type === 'heading1' || b.type === 'heading2') hCount++;
-        reduced.push(b);
-      }
-    }
-    return controlBoldDensity(reduced);
-  }
-
+  // Rule 5: Preserve all legitimate headings without artificial capping (for long articles)
   return controlBoldDensity(split);
 }
 
 /**
  * Rule 6: 智能加粗密度控制
- * 全文 ** 标记总字符数不超过文本总长度的 15%
- * 优先保留短关键词加粗（≤6字），移除长句加粗
+ * 全文 ** 标记总字符数不超过文本总长度的 30%
+ * 优先保留段首标题/短句加粗（≤30字），避免过度剥离影响阅读层次
  */
 function controlBoldDensity(blocks: ContentBlock[]): ContentBlock[] {
   let totalText = 0;
@@ -155,16 +140,15 @@ function controlBoldDensity(blocks: ContentBlock[]): ContentBlock[] {
   }
 
   const density = totalText > 0 ? boldText / totalText : 0;
-  if (density <= 0.15) return blocks;
+  if (density <= 0.30) return blocks;
 
-  // Smart reduction: keep short keyword bolds (≤6 chars inner text), strip long-phrase bolds
+  // Smart reduction: strip long paragraph bolding (>30 chars), preserve sub-headings and key phrases
   return blocks.map(b => {
     if (b.type !== 'paragraph' && b.type !== 'quote' && b.type !== 'bullet_list') return b;
     let content = b.content || '';
-    // Only strip bolds where the inner text is a long phrase (>6 chars)
     content = content.replace(/\*\*(.+?)\*\*/g, (match, inner) => {
-      if (inner.length <= 6) return match; // Keep short keyword bolds
-      return inner; // Strip long-phrase bolds
+      if (inner.length <= 30) return match; // Preserve bolds up to 30 chars (viewpoint sentences & headers)
+      return inner; // Strip excessively long paragraph-level bolds
     });
     return { ...b, content };
   });
@@ -228,9 +212,15 @@ export function parseFormattedMarkdownToBlocks(aiOutput: string): ContentBlock[]
       continue;
     }
 
-    // Quotes
-    if (trimmed.startsWith('> ')) {
-      rawBlocks.push({ id: makeId(), type: 'quote', content: cleanQuote(trimmed) });
+    // Quotes — merge consecutive quote lines into a single quote block
+    if (trimmed.startsWith('> ') || trimmed === '>') {
+      const quoteText = cleanQuote(trimmed);
+      const last = rawBlocks[rawBlocks.length - 1];
+      if (last && last.type === 'quote') {
+        last.content += '\n' + quoteText;
+      } else {
+        rawBlocks.push({ id: makeId(), type: 'quote', content: quoteText });
+      }
       continue;
     }
 

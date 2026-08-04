@@ -119,6 +119,86 @@ export default function App() {
     return acc + (blk.content ? blk.content.trim().length : 0);
   }, currentArticle.title.length);
 
+  // Undo/Redo History Stack
+  const [history, setHistory] = useState<{
+    past: Array<{ article: Article; styleConfig: StyleConfig }>;
+    future: Array<{ article: Article; styleConfig: StyleConfig }>;
+  }>({ past: [], future: [] });
+
+  const saveSnapshot = useCallback(() => {
+    if (!currentArticle) return;
+    setHistory((prev) => ({
+      past: [
+        ...prev.past.slice(-25),
+        { article: JSON.parse(JSON.stringify(currentArticle)), styleConfig: { ...styleConfig } },
+      ],
+      future: [],
+    }));
+  }, [currentArticle, styleConfig]);
+
+  const handleUndo = useCallback(() => {
+    setHistory((prev) => {
+      if (prev.past.length === 0) return prev;
+      const previous = prev.past[prev.past.length - 1];
+      const newPast = prev.past.slice(0, prev.past.length - 1);
+
+      setArticles((arts) => arts.map((a) => (a.id === previous.article.id ? previous.article : a)));
+      setStyleConfig(previous.styleConfig);
+
+      return {
+        past: newPast,
+        future: [
+          { article: JSON.parse(JSON.stringify(currentArticle)), styleConfig: { ...styleConfig } },
+          ...prev.future,
+        ],
+      };
+    });
+  }, [currentArticle, styleConfig]);
+
+  const handleRedo = useCallback(() => {
+    setHistory((prev) => {
+      if (prev.future.length === 0) return prev;
+      const next = prev.future[0];
+      const newFuture = prev.future.slice(1);
+
+      setArticles((arts) => arts.map((a) => (a.id === next.article.id ? next.article : a)));
+      setStyleConfig(next.styleConfig);
+
+      return {
+        past: [
+          ...prev.past,
+          { article: JSON.parse(JSON.stringify(currentArticle)), styleConfig: { ...styleConfig } },
+        ],
+        future: newFuture,
+      };
+    });
+  }, [currentArticle, styleConfig]);
+
+  // Global Keyboard Shortcuts (Ctrl+Z / Cmd+Z for Undo, Ctrl+Y / Cmd+Shift+Z for Redo)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      const activeEl = document.activeElement;
+      const isInput = activeEl?.tagName === 'INPUT' || activeEl?.tagName === 'TEXTAREA';
+
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z' && !e.shiftKey) {
+        if (!isInput || history.past.length > 0) {
+          e.preventDefault();
+          handleUndo();
+        }
+      } else if (
+        ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'y') ||
+        ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key.toLowerCase() === 'z')
+      ) {
+        if (!isInput || history.future.length > 0) {
+          e.preventDefault();
+          handleRedo();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleUndo, handleRedo, history.past.length, history.future.length]);
+
   // Handlers for Editing Article
   const handleUpdateTitle = (title: string) => {
     setArticles((prev) =>
@@ -240,6 +320,26 @@ export default function App() {
     setCurrentTab('editing');
   };
 
+  const handleClearContent = () => {
+    saveSnapshot();
+    setArticles((prev) =>
+      prev.map((art) => {
+        if (art.id !== activeArticleId) return art;
+        return {
+          ...art,
+          title: '',
+          blocks: [
+            {
+              id: `b_${Date.now()}`,
+              type: 'paragraph',
+              content: '',
+            },
+          ],
+        };
+      })
+    );
+  };
+
   const handleDeleteProject = (id: string) => {
     setArticles((prev) => prev.filter((a) => a.id !== id));
     if (id === activeArticleId) {
@@ -259,6 +359,7 @@ export default function App() {
   };
 
   const handleUseTemplate = (template: Article) => {
+    saveSnapshot();
     const newArticle: Article = {
       ...template,
       id: `proj_${Date.now()}`,
@@ -350,6 +451,7 @@ export default function App() {
 
   // AI Polish Handler —— parses AI output into structured ContentBlock[]
   const handleAIPolish = async () => {
+    saveSnapshot();
     setIsAiWorking(true);
     try {
       const allText = currentArticle.blocks.map((b) => b.content).join('\n\n');
@@ -430,6 +532,11 @@ export default function App() {
                 wordCount={totalWordCount}
                 onAddBlock={(type) => handleInsertBlock(currentArticle.blocks.length, type)}
                 onAIPolish={handleAIPolish}
+                onClearContent={handleClearContent}
+                onUndo={handleUndo}
+                onRedo={handleRedo}
+                canUndo={history.past.length > 0}
+                canRedo={history.future.length > 0}
                 isAiWorking={isAiWorking}
                 isStylePanelOpen={isStylePanelOpen}
                 onFormatInline={handleFormatInline}

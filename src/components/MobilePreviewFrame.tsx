@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Article, StyleConfig } from '../types';
-import { getHeadingPrefix, stripHeadingPrefix } from '../utils/headingFormatter';
 
 interface MobilePreviewFrameProps {
   article: Article;
@@ -105,10 +104,6 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
               article.blocks.map((block) => {
                 switch (block.type) {
                   case 'heading1': {
-                    const prefix = getHeadingPrefix('heading1', block.id, article.blocks, styleConfig);
-                    const cleanText = stripHeadingPrefix(block.content);
-                    const displayText = prefix + cleanText;
-
                     if (styleConfig.headingStyle === 'solid-bg') {
                       return (
                         <div key={block.id} className="mt-6 mb-3">
@@ -116,7 +111,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             className="text-[18px] font-bold text-white px-3 py-2 rounded-md"
                             style={{ backgroundColor: primaryColor }}
                           >
-                            {displayText}
+                            {block.content}
                           </h2>
                         </div>
                       );
@@ -130,7 +125,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             SECTION
                           </span>
                           <h2 className="text-[18px] font-bold mt-1" style={{ color: primaryColor }}>
-                            {displayText}
+                            {block.content}
                           </h2>
                         </div>
                       );
@@ -138,7 +133,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                       return (
                         <div key={block.id} className="mt-6 mb-3 pb-1 border-b-2" style={{ borderColor: primaryColor }}>
                           <h2 className="text-[18px] font-bold" style={{ color: primaryColor }}>
-                            {displayText}
+                            {block.content}
                           </h2>
                         </div>
                       );
@@ -150,28 +145,23 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                             className="text-[18px] font-bold pl-3"
                             style={{ borderLeft: `4px solid ${primaryColor}`, color: primaryColor }}
                           >
-                            {displayText}
+                            {block.content}
                           </h2>
                         </div>
                       );
                     }
                   }
 
-                  case 'heading2': {
-                    const prefix = getHeadingPrefix('heading2', block.id, article.blocks, styleConfig);
-                    const cleanText = stripHeadingPrefix(block.content);
-                    const displayText = prefix + cleanText;
-
+                  case 'heading2':
                     return (
                       <h3 
                         key={block.id} 
                         className="text-[16px] font-bold text-[#1b1c1c] mt-5 mb-2 pl-2"
                         style={{ borderLeft: `3px solid ${primaryColor}` }}
                       >
-                        {displayText}
+                        {block.content}
                       </h3>
                     );
-                  }
 
                   case 'image':
                     return (
@@ -192,7 +182,7 @@ export const MobilePreviewFrame: React.FC<MobilePreviewFrameProps> = ({
                     return (
                       <blockquote
                         key={block.id}
-                        className="my-3 p-3.5 rounded-md text-sm italic border-l-4 leading-relaxed"
+                        className="my-3 p-3.5 rounded-md text-sm italic border-l-4 leading-relaxed whitespace-pre-wrap"
                         style={{
                           backgroundColor: `${primaryColor}0d`,
                           borderColor: primaryColor,

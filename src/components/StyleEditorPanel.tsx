@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { StyleConfig } from '../types';
 
 interface StyleEditorPanelProps {
@@ -178,6 +178,40 @@ export const StyleEditorPanel: React.FC<StyleEditorPanelProps> = ({
                   key={item.value}
                   onClick={() => onUpdateStyle({ headingStyle: item.value })}
                   className={`p-2.5 rounded-lg border text-xs font-medium text-left transition-all cursor-pointer ${
+                    isSelected
+                      ? 'border-[#07C160] bg-[#07C160]/10 text-[#006d33] font-bold shadow-2xs'
+                      : 'border-[#e4e2e1] bg-white text-[#1b1c1c] hover:bg-[#f6f3f2]'
+                  }`}
+                >
+                  {item.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Heading Numbering Selection */}
+        <div className="space-y-3">
+          <label className="text-xs font-semibold text-[#5d5f5f] tracking-wide block">
+            标题序号规范
+          </label>
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { id: 'chinese', label: '一、标题' },
+              { id: 'arabic', label: '1. 标题' },
+              { id: 'circle', label: '① 标题' },
+              { id: 'none', label: '无序号' },
+            ].map((item) => {
+              const isSelected = (styleConfig.headingNumbering || 'none') === item.id;
+              return (
+                <button
+                  key={item.id}
+                  onClick={() =>
+                    onUpdateStyle({
+                      headingNumbering: item.id as StyleConfig['headingNumbering'],
+                    })
+                  }
+                  className={`p-2.5 rounded-lg border text-xs font-medium text-center transition-all cursor-pointer ${
                     isSelected
                       ? 'border-[#07C160] bg-[#07C160]/10 text-[#006d33] font-bold shadow-2xs'
                       : 'border-[#e4e2e1] bg-white text-[#1b1c1c] hover:bg-[#f6f3f2]'

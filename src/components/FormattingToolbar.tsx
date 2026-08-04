@@ -5,6 +5,11 @@ interface FormattingToolbarProps {
   wordCount: number;
   onAddBlock: (type: BlockType) => void;
   onAIPolish?: () => void;
+  onClearContent?: () => void;
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
   isAiWorking?: boolean;
   isStylePanelOpen?: boolean;
 }
@@ -13,6 +18,11 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
   wordCount,
   onAddBlock,
   onAIPolish,
+  onClearContent,
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
   isAiWorking = false,
   isStylePanelOpen = false,
 }) => {
@@ -31,6 +41,34 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
 
   return (
     <div className="h-12 border-b border-[#e4e2e1] flex items-center px-4 gap-2 bg-white sticky top-0 z-20 shadow-2xs select-none">
+      {/* Undo / Redo Shortcuts */}
+      <div className="flex items-center gap-0.5 border-r border-[#e4e2e1] pr-2 mr-1">
+        <button
+          title="撤回 (Ctrl + Z)"
+          disabled={!canUndo}
+          onClick={onUndo}
+          className={`p-1.5 rounded transition-colors ${
+            canUndo
+              ? 'hover:bg-[#f6f3f2] text-[#3d4a3d] cursor-pointer'
+              : 'text-[#ccc] cursor-not-allowed'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">undo</span>
+        </button>
+        <button
+          title="重做 (Ctrl + Y)"
+          disabled={!canRedo}
+          onClick={onRedo}
+          className={`p-1.5 rounded transition-colors ${
+            canRedo
+              ? 'hover:bg-[#f6f3f2] text-[#3d4a3d] cursor-pointer'
+              : 'text-[#ccc] cursor-not-allowed'
+          }`}
+        >
+          <span className="material-symbols-outlined text-[18px]">redo</span>
+        </button>
+      </div>
+
       {/* Quick Insert Blocks */}
       <div className="flex items-center gap-1">
         <button
@@ -90,7 +128,7 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
         )}
       </div>
 
-      {/* AI Assistant Buttons - hidden when style panel is open */}
+      {/* AI Assistant Buttons & Clear Content - hidden when style panel is open */}
       {!isStylePanelOpen && (
         <div className="flex items-center gap-2 ml-2">
           {onAIPolish && (
@@ -103,6 +141,21 @@ export const FormattingToolbar: React.FC<FormattingToolbarProps> = ({
                 {isAiWorking ? 'autorenew' : 'auto_awesome'}
               </span>
               {isAiWorking ? 'AI 排版中...' : 'AI 结构化排版'}
+            </button>
+          )}
+
+          {onClearContent && (
+            <button
+              title="清空文字（保留排版与模板）"
+              onClick={() => {
+                if (window.confirm('确定要清空文章的所有文字吗？此操作将保留您当前的排版与模板样式。')) {
+                  onClearContent();
+                }
+              }}
+              className="px-2.5 py-1 rounded-full bg-red-50 hover:bg-red-100 text-red-600 font-medium text-xs flex items-center gap-1 transition-colors cursor-pointer border border-red-200"
+            >
+              <span className="material-symbols-outlined text-[15px]">delete_sweep</span>
+              清空文字
             </button>
           )}
         </div>

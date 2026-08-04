@@ -168,12 +168,21 @@ export const ThemeExtractor: React.FC<ThemeExtractorProps> = ({ onSaveAndApplyTh
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Left: Style Specifications */}
             <div className="bg-white rounded-2xl p-6 border border-[#e4e2e1] shadow-sm space-y-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <span className="inline-block px-2.5 py-1 rounded-md text-xs font-bold bg-[#e8f5e9] text-[#006d33] mb-1">
-                    解构成功
-                  </span>
-                  <h2 className="text-lg font-bold text-[#1b1c1c]">{extractedTheme.name}</h2>
+              <div className="flex flex-col gap-2">
+                <span className="inline-block self-start px-2.5 py-1 rounded-md text-xs font-bold bg-[#e8f5e9] text-[#006d33]">
+                  解构成功
+                </span>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs font-semibold text-[#5d5f5f] uppercase tracking-wider">
+                    自定义模板名称
+                  </label>
+                  <input
+                    type="text"
+                    value={extractedTheme.name}
+                    onChange={(e) => setExtractedTheme({ ...extractedTheme, name: e.target.value })}
+                    placeholder="请输入解构模板名称..."
+                    className="w-full text-base font-bold text-[#1b1c1c] bg-[#f6f3f2] px-3.5 py-2 rounded-xl border border-[#e4e2e1] focus:outline-none focus:border-[#07C160] transition-colors"
+                  />
                 </div>
               </div>
 
